@@ -11,8 +11,8 @@ class Patient extends Model
 
   protected $fillable = ['first_name', 'middle_name', 'last_name', 'suffix'];
 
-  // public function medicalRecords()
-  // {
-  //   return $this->hasMany(MedicalRecord::class);
-  // }
+  public function claims()
+  {
+    return $this->hasMany(Claim::class);
+  }
 }

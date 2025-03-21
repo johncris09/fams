@@ -12,15 +12,15 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@mui/material";
-import { DataTable } from "@/Components/cash_advance/data-table";
-import { getColumns } from "@/Components/cash_advance/columns";
+import { DataTable } from "@/Components/claim/data-table";
+import { getColumns } from "@/Components/claim/columns";
 import { Button } from "@/Components/ui/button";
 import {  toast } from 'react-toastify'
-import FormModal from "@/Components/cash_advance/FormModal";
-const TITLE = "Cash Advance";
+import FormModal from "@/Components/claim/FormModal";
+const TITLE = "Claim";
 
 export default function Index({ auth }) {
-  const { cashAdvances } = usePage().props;
+  const { claims } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -36,7 +36,7 @@ export default function Index({ auth }) {
   };
 
   const handleDelete = () => {
-    router.delete(route("patients.destroy", selectedData.id), {
+    router.delete(route("claims.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
               toast.success(`${TITLE} deleted successfully` );
@@ -60,7 +60,7 @@ export default function Index({ auth }) {
           </div>
           <DataTable
             columns={columns}
-            data={cashAdvances.data}
+            data={claims}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FinancialType extends Model
+class Barangay extends Model
 {
+
   use HasFactory;
 
-  protected $fillable = ['type', 'amount', 'description'];
+  protected $fillable = ['barangay' ];
 
   public function claims() {
     return $this->hasMany(Claim::class);

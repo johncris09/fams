@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\ClaimantController;
+use App\Http\Controllers\ClaimController;
 use App\Http\Controllers\FinancialTypeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
@@ -95,6 +97,28 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::patch('/cash_advances/{cash_advance}', [CashAdvanceController::class, 'update'])->name('cash_advances.update');
   Route::delete('/cash_advances/{id}', [CashAdvanceController::class, 'destroy'])->name('cash_advances.destroy');
   Route::delete('/cash_advances/{id}', array(CashAdvanceController::class, 'destroy'))->name('cash_advances.destroy');
+
+
+  // BARANGAY
+  Route::get('/barangays', [BarangayController::class, 'index'])->name(name: 'barangays.index');
+  Route::get('/barangays/create', [BarangayController::class, 'create'])->name('barangays.create');
+  Route::post('/barangays', [BarangayController::class, 'store'])->name('barangays.store');
+  Route::get('/barangays/{id}', [BarangayController::class, 'findById'])->name('barangays.show');
+  Route::get('/barangays/{id}/edit', [BarangayController::class, 'edit'])->name('barangays.edit');
+  Route::patch('/barangays/{barangay}', [BarangayController::class, 'update'])->name('barangays.update');
+  Route::delete('/barangays/{id}', [BarangayController::class, 'destroy'])->name('barangays.destroy');
+  Route::delete('/barangays/{id}', array(BarangayController::class, 'destroy'))->name('barangays.destroy');
+
+
+  // CLAIM
+  Route::get('/claims', [ClaimController::class, 'index'])->name(name: 'claims.index');
+  Route::get('/claims/create', [ClaimController::class, 'create'])->name('claims.create');
+  Route::post('/claims', [ClaimController::class, 'store'])->name('claims.store');
+  Route::get('/claims/{id}', [ClaimController::class, 'findById'])->name('claims.show');
+  Route::get('/claims/{id}/edit', [ClaimController::class, 'edit'])->name('claims.edit');
+  Route::patch('/claims/{claim}', [ClaimController::class, 'update'])->name('claims.update');
+  Route::delete('/claims/{id}', [ClaimController::class, 'destroy'])->name('claims.destroy');
+  Route::delete('/claims/{id}', array(ClaimController::class, 'destroy'))->name('claims.destroy');
 
 
 });

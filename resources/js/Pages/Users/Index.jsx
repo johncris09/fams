@@ -1,8 +1,5 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
-import { usePage } from "@inertiajs/react";
-import { CreateUserSheet } from "./Create";
-import { toast } from "sonner";
+"use client";
+
 import {
   Dialog,
   DialogContent,
@@ -11,337 +8,96 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/Components/ui/dialog";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, usePage, router } from "@inertiajs/react";
 import { useMemo, useState } from "react";
+import { Card, CardContent } from "@mui/material";
+import { DataTable } from "@/Components/user/data-table";
+import { getColumns } from "@/Components/user/columns";
 import { Button } from "@/Components/ui/button";
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  flexRender,
-  getFilteredRowModel,
-} from "@tanstack/react-table";
-import { router } from '@inertiajs/react';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-import { Checkbox } from "@/Components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu"
-import { Input } from "@/Components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/Components/ui/table"
-export default function Users({ auth }) {
-  const { users, message, roles, filters } = usePage().props;
+import {  toast } from 'react-toastify'
+import FormModal from "@/Components/user/FormModal";
+const TITLE = "User";
 
-  const [selectedID, setSelectedID] = useState([])
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState(
+export default function Index({ auth }) {
+  const { users } = usePage().props;
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(null);
+
+  const handleOpenModal = (data = null) => {
+    router.reload({ only: [] });
+    setSelectedData(data);
+    setModalOpen(true);
+  };
+  const handleShowDeleteDialog = (data = null) => {
+    setShowDeleteDialog(true);
+    setSelectedData(data);
+  };
+
+  const handleDelete = () => {
+    router.delete(route("patients.destroy", selectedData.id), {
+      preserveScroll: true,
+      onSuccess: () => {
+              toast.success(`${TITLE} deleted successfully` );
+        setShowDeleteDialog(false);
+        setSelectedData(null);
+      },
+    });
+  };
+  const columns = useMemo(
+    () => getColumns(handleOpenModal, handleShowDeleteDialog),
     []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    useState({})
-  const [rowSelection, setRowSelection] = useState({})
-
-  const { delete: destroy } = useForm();
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  console.log();
-  const handleDelete = (userId) => {
-    router.delete(route("users.destroy", selectedID), {
-      preserveScroll: true,
-      onSuccess: () => {
-        toast.success("User deleted successfully");
-        setSelectedID("")
-        setShowDeleteDialog(false);
-      },
-    });
-  };
-
-  const handleBulkDelete = () => {
-    destroy(route("users.bulk-destroy", { ids: selectedIds }), {
-      preserveScroll: true,
-      onSuccess: () => {
-        toast.success("users deleted successfully", {
-          description: `${selectedIds.length} users deleted successfully`,
-          position: "top-center",
-        });
-        setSelectedIds([]);
-        setShowDeleteDialog(false);
-      },
-      onError: () => {
-        toast.error("Failed to delete users", {
-          description: "Failed to delete users",
-          position: "top-center",
-        });
-        setShowDeleteDialog(false);
-      },
-    });
-  };
-
-  console.info(users.data)
-  const columns = [
-
-
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(row.original.id)}
-              >
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  setSelectedID(row.original.id)
-                  setShowDeleteDialog(true)
-                }}
-              >
-                Delete
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(row.original.id)}
-              >
-                Copy payment ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-    },
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "name",
-      header: "Name",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
-    },
-    {
-      accessorKey: "email",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Email
-            <ArrowUpDown />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-    },
-  ]
-
-  // const userData = users.data || [];
-  // console.info(userData)
-  const table = useReactTable({
-    data: users.data || [],
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  })
+  );
   return (
     <AuthenticatedLayout auth_user={auth.user} header="Users">
+      <Head title={`${TITLE}s`} />
 
-      <Head title="Users" />
-      <div className="w-full">
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Filter emails..."
-            value={(table.getColumn("email")?.getFilterValue()) ?? ""}
-            onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
+      <Card>
+        <CardContent>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">{`${TITLE}`}s</h1>
+          </div>
+          <DataTable
+            columns={columns}
+            data={users.data}
+            onEdit={handleOpenModal}
+            onAdd={handleOpenModal}
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                Columns <ChevronDown />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  )
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
-        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Selected Users</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete the user? This
-                action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteDialog(false)}
-              >
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleDelete}>
-                Delete User
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </AuthenticatedLayout>
+        </CardContent>
+      </Card>
+      <FormModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          router.reload({ only: [] });
+          setModalOpen(false);
+        }}
+        selectedData={selectedData}
+        title={`${TITLE}`}
+      />
 
-  )
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Selected Users</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the user? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </AuthenticatedLayout>
+  );
 }

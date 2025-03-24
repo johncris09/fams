@@ -1,4 +1,3 @@
-
 import {
   BadgeCheck,
   Bell,
@@ -6,13 +5,9 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-} from "lucide-react"
+} from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,20 +16,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { Link, usePage } from '@inertiajs/react';
+} from "@/components/ui/sidebar";
+import { Link, usePage } from "@inertiajs/react";
 import axios from "axios";
 import { router } from "@inertiajs/react";
 
-export function NavUser() {
+export function NavUser({ isNavbar }) {
   const user = usePage().props.auth.user;
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
 
   return (
     <SidebarMenu>
@@ -58,7 +53,7 @@ export function NavUser() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile || isNavbar ? "bottom" : "right"}
             align="end"
             sideOffset={4}
           >
@@ -97,15 +92,18 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup> */}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => {
-              router.post(route("logout"));
-            }}> <LogOut />
+            <DropdownMenuItem
+              onClick={() => {
+                router.post(route("logout"));
+              }}
+            >
+              {" "}
+              <LogOut />
               Log out
             </DropdownMenuItem>
-
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

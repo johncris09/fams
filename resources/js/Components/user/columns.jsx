@@ -4,23 +4,20 @@ import DataTableColumnHeader from "../data-table-components/data-table-column-he
 import { DeleteIcon, MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Button } from "@/Components/ui/button";
-import { cn } from "@/lib/utils";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenu, DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
+  DropdownMenuLabel, DropdownMenuShortcut,
+  DropdownMenuTrigger
 } from "@/Components/ui/dropdown-menu";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
+
 export const getColumns = (auth, handleOpenModal, handleShowDeleteDialog) => {
   const userPermissions = auth.user?.permissions || [];
-  const hasPermission = userPermissions.includes("financial-type-edit") || userPermissions.includes("financial-type-delete");
+  const hasPermission = userPermissions.includes("user-edit") || userPermissions.includes("user-delete");
 
   return [
-
     ...(hasPermission
       ? [
           {
@@ -39,7 +36,7 @@ export const getColumns = (auth, handleOpenModal, handleShowDeleteDialog) => {
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-                  {userPermissions.includes("financial-type-edit") && (
+                  {userPermissions.includes("user-edit") && (
                     <DropdownMenuItem
                       onClick={() => handleOpenModal(row.original)}
                     >
@@ -50,7 +47,7 @@ export const getColumns = (auth, handleOpenModal, handleShowDeleteDialog) => {
                     </DropdownMenuItem>
                   )}
 
-                  {userPermissions.includes("financial-type-delete") && (
+                  {userPermissions.includes("user-delete") && (
                     <DropdownMenuItem
                       onClick={() => handleShowDeleteDialog(row.original)}
                     >
@@ -68,52 +65,40 @@ export const getColumns = (auth, handleOpenModal, handleShowDeleteDialog) => {
       : []),
 
     {
-      accessorKey: "type",
+      accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Type" />
+        <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
-        <div className="w-[150px] capitalize">{row.getValue("type")}</div>
+        <div className="w-[200px] capitalize">{row.getValue("name")}</div>
       ),
       enableSorting: true,
-      enableHiding: true,
+      enableHiding: true
     },
 
     {
-      accessorKey: "amount",
+      accessorKey: "email",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Amount" />
-      ),
-      cell: ({ row }) => {
-        const amount = row.getValue("amount");
-        const formattedAmount = new Intl.NumberFormat("en-US", {
-          style: "decimal",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        }).format(amount);
-
-        return (
-          <div className="flex w-[100px] items-center">
-            <span className="capitalize">{formattedAmount}</span>
-          </div>
-        );
-      },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id));
-      },
-    },
-
-
-    {
-      accessorKey: "description",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Description" />
+        <DataTableColumnHeader column={column} title="Email" />
       ),
       cell: ({ row }) => (
-        <div className=" capitalize">{row.getValue("description")}</div>
+        <div className="w-[150px] capitalize">{row.getValue("email")}</div>
       ),
       enableSorting: true,
-      enableHiding: true,
+      enableHiding: true
+    },
+
+    {
+      accessorKey: "roles",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Roles" />
+      ),
+      cell: ({ row }) => (
+        <div className="w-[150px] capitalize">{row.getValue("roles")}</div>
+      ),
+      enableSorting: true,
+      enableHiding: true
     },
   ];
-};
+}
+

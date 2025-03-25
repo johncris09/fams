@@ -126,11 +126,11 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                 {processing ? (
                   selectedData ? (
                     <>
-                      <Loader2Icon className="animate-spin" /> Updating...
+                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" /> Updating...
                     </>
                   ) : (
                     <>
-                      <Loader2Icon className="animate-spin" /> Saving...
+                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" /> Saving...
                     </>
                   )
                 ) : selectedData ? (

@@ -1,145 +1,91 @@
-
-import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  CreditCard,
-  Frame,
-  GalleryVerticalEnd,
-  LayoutDashboard,
-  Map,
-  PieChart,
-  Settings,
-  Settings2,
-  Settings2Icon,
-  SquareTerminal,
-  UserCheck2,
-  UserIcon,
-  Users,
-} from "lucide-react"
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+  CreditCard, GroupIcon,
+  LayoutDashboard, UserCheck2,
+  UserIcon
+} from "lucide-react";
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-import { ChecklistOutlined, Money, MoneyOffCsred, MoneyOffSharp, MoneyOutlined, Sick, SickOutlined } from "@mui/icons-material"
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: route("dashboard"),
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-    {
-      title: "Patients",
-      url: route("patients.index"),
-      icon: SickOutlined,
-    },
-    {
-      title: "Claimants",
-      url: route("claimants.index"),
-      icon: UserCheck2,
-    },
-    {
-      title: "Financial Types",
-      url: route("financial_types.index"),
-      icon: ChecklistOutlined,
-    },
-    {
-      title: "Cash Advances",
-      url: route("cash_advances.index"),
-      icon: CreditCard,
-    },
-    // {
-    //   title: "Users",
-    //   url: route("users.index"),
-    //   icon: Users,
-    //   items: [
-    //     {
-    //       title: "Genesis",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Explorer",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Quantum",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Account",
-    //   url: route("profile.edit"),
-    //   icon: Settings,
-    //   items: [
-    //     {
-    //       title: "Profile",
-    //       url: route("profile.edit"),
-    //     },
-    //     {
-    //       title: "Get Started",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Tutorials",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Changelog",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-    // {
-    //   title: "Settings",
-    //   url: "#",
-    //   icon: Settings2Icon,
-    //   items: [
-    //     {
-    //       title: "General",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Team",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Billing",
-    //       url: "#",
-    //     },
-    //     {
-    //       title: "Limits",
-    //       url: "#",
-    //     },
-    //   ],
-    // },
-  ],
-}
+  SidebarFooter, SidebarRail
+} from "@/components/ui/sidebar";
+import {
+  ChecklistOutlined, SickOutlined
+} from "@mui/icons-material";
+import { usePage } from "@inertiajs/react";
 
 export function AppSidebar({ ...props }) {
+  const { auth } = usePage().props;
+  const userRoles = auth.user?.roles || []; // Get user roles
+  const userPermissions = auth.user?.permissions || []; // Get user permissions
+
+  // This is sample data.
+  const data = {
+    navMain: [
+      {
+        title: "Dashboard",
+        url: route("dashboard"),
+        icon: LayoutDashboard,
+        isActive: true,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Patients",
+        url: route("patients.index"),
+        icon: SickOutlined,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Claimants",
+        url: route("claimants.index"),
+        icon: UserCheck2,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Financial Types",
+        url: route("financial_types.index"),
+        icon: ChecklistOutlined,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Cash Advances",
+        url: route("cash_advances.index"),
+        icon: CreditCard,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Users",
+        url: route("users.index"),
+        icon: UserIcon,
+        roles: ["Super Admin" ],
+      },
+      {
+        title: "Roles",
+        url: route("roles.index"),
+        icon: GroupIcon,
+        roles: ["Super Admin" ],
+      },
+    ],
+  };
+
+  const filteredNavMain = data.navMain.filter(
+    (item) =>
+      !item.roles ||
+      item.roles.some((role) => userRoles.includes(role)) ||
+      (item.permissions &&
+        item.permissions.some((perm) => userPermissions.includes(perm)))
+  );
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={filteredNavMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

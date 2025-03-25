@@ -4,9 +4,11 @@ use App\Http\Controllers\BarangayController;
 use App\Http\Controllers\CashAdvanceController;
 use App\Http\Controllers\ClaimantController;
 use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinancialTypeController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -36,9 +38,10 @@ Route::redirect('/', destination: 'dashboard');
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
   // DASHBOARD
-  Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-  })->name('dashboard');
+  // Route::get('dashboard', function () {
+  //   return Inertia::render('Dashboard');
+  // })->name('dashboard');
+  Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
   // PROFILE
   Route::get('/profile', array(ProfileController::class, 'edit'))->name('profile.edit');
@@ -119,6 +122,18 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
   Route::patch('/claims/{claim}', [ClaimController::class, 'update'])->name('claims.update');
   Route::delete('/claims/{id}', [ClaimController::class, 'destroy'])->name('claims.destroy');
   Route::delete('/claims/{id}', array(ClaimController::class, 'destroy'))->name('claims.destroy');
+
+
+  // ROLE
+  Route::get('/roles', [RoleController::class, 'index'])->name(name: 'roles.index');
+  Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+  Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+  Route::get('/roles/{id}', [RoleController::class, 'findById'])->name('roles.show');
+  Route::get('/roles/{id}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+  Route::patch('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+  Route::delete('/roles/{id}', [RoleController::class, 'destroy'])->name('roles.destroy');
+  Route::delete('/roles/{id}', array(RoleController::class, 'destroy'))->name('roles.destroy');
+
 
 
 });

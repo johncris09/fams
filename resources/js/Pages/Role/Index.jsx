@@ -12,15 +12,17 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import { useMemo, useState } from "react";
 import { Card, CardContent } from "@mui/material";
-import { DataTable } from "@/Components/patient/data-table";
-import { getColumns } from "@/Components/patient/columns";
+import { DataTable } from "@/Components/role/data-table";
+import { getColumns } from "@/Components/role/columns";
 import { Button } from "@/Components/ui/button";
 import { toast } from "react-toastify";
-import FormModal from "@/Components/patient/FormModal";
-const TITLE = "Patient";
+import FormModal from "@/Components/role/FormModal";
+const TITLE = "Role";
 
 export default function Index({ auth }) {
-  const { patients } = usePage().props;
+
+  const { roles, permissions } = usePage().props;
+  console.info();
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -36,7 +38,7 @@ export default function Index({ auth }) {
   };
 
   const handleDelete = () => {
-    router.delete(route("patients.destroy", selectedData.id), {
+    router.delete(route("roles.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
         toast.success(`${TITLE} deleted successfully`);
@@ -46,7 +48,7 @@ export default function Index({ auth }) {
     });
   };
   const columns = useMemo(
-    () => getColumns(auth, handleOpenModal, handleShowDeleteDialog),
+    () => getColumns(handleOpenModal, handleShowDeleteDialog),
     []
   );
   return (
@@ -59,9 +61,8 @@ export default function Index({ auth }) {
             <h1 className="text-2xl font-bold">{`${TITLE}`}s</h1>
           </div>
           <DataTable
-            auth={auth}
             columns={columns}
-            data={patients.data}
+            data={roles.data}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

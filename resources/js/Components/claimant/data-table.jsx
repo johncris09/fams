@@ -25,7 +25,9 @@ import {
 import { DataTablePagination } from "../data-table-components/data-table-pagination";
 import { DataTableViewOptions } from "../data-table-components/data-table-view-options";
 
-export function DataTable({ columns, data, onAdd  }) {
+export function DataTable({ columns, data, onAdd, auth }) {
+  const userPermissions = auth.user?.permissions || [];
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -74,13 +76,11 @@ export function DataTable({ columns, data, onAdd  }) {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between">
         <div className="flex flex-1 flex-wrap items-center gap-2">
-
-          <Button
-            size="sm"
-            onClick={() => onAdd()}
-          >
-            <PlusCircle className="mr-2" /> Add
-          </Button>
+          {userPermissions.includes("claimant-create") && (
+            <Button size="sm" onClick={() => onAdd()}>
+              <PlusCircle className="mr-2" /> Add
+            </Button>
+          )}
 
           <Input
             placeholder="Search..."
@@ -89,7 +89,6 @@ export function DataTable({ columns, data, onAdd  }) {
             className="h-8 w-[150px] lg:w-[250px]"
           />
           <DataTableViewOptions table={table} />
-
         </div>
       </div>
       <div className="rounded-md border">
@@ -103,9 +102,9 @@ export function DataTable({ columns, data, onAdd  }) {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}

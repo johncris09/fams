@@ -16,7 +16,7 @@ import { DataTable } from "@/Components/financial_type/data-table";
 import { getColumns } from "@/Components/financial_type/columns";
 import FormModal from "@/Components/financial_type/FormModal";
 import { Button } from "@/Components/ui/button";
-import {  toast } from 'react-toastify'
+import { toast } from "react-toastify";
 const TITLE = "Financial Type";
 export default function Index({ auth }) {
   const { financialTypes } = usePage().props;
@@ -38,14 +38,14 @@ export default function Index({ auth }) {
     router.delete(route("financial_types.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success(`${TITLE} deleted successfully` );
+        toast.success(`${TITLE} deleted successfully`);
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
     });
   };
   const columns = useMemo(
-    () => getColumns(handleOpenModal, handleShowDeleteDialog),
+    () => getColumns(auth, handleOpenModal, handleShowDeleteDialog),
     []
   );
   return (
@@ -58,6 +58,7 @@ export default function Index({ auth }) {
             <h1 className="text-2xl font-bold">{`${TITLE}`}s</h1>
           </div>
           <DataTable
+            auth={auth}
             columns={columns}
             data={financialTypes.data}
             onEdit={handleOpenModal}
@@ -78,9 +79,9 @@ export default function Index({ auth }) {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Selected Users</DialogTitle>
+            <DialogTitle>Delete Selected {`${TITLE}`}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the user? This action cannot be
+              Are you sure you want to delete the {`${TITLE}`}? This action cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
@@ -92,7 +93,7 @@ export default function Index({ auth }) {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete User
+              Delete {`${TITLE}`}
             </Button>
           </DialogFooter>
         </DialogContent>

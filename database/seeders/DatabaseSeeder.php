@@ -19,17 +19,30 @@ class DatabaseSeeder extends Seeder
    */
   public function run(): void
   {
-    Role::create(['name' => 'admin']);
-    Role::create(['name' => 'user']);
+    Role::create(['name' => 'Super Admin']);
+    Role::create(['name' => 'Admin']);
+    Role::create(['name' => 'User']);
 
     User::factory()->create([
       'name' => 'Carlos RGL',
+      'email' => 'superadmin@gmail.com',
+      'password' => 'superadmin@gmail.com'
+
+    ]);
+    User::factory()->create([
+      'name' => 'Admin',
       'email' => 'admin@gmail.com',
       'password' => 'admin@gmail.com'
 
     ]);
+    User::factory()->create([
+      'name' => 'User',
+      'email' => 'user@gmail.com',
+      'password' => 'user@gmail.com'
+
+    ]);
     // assign role user to the users
-    User::factory(50)->create()->each(function ($user) {
+    User::factory(5)->create()->each(function ($user) {
       $user->assignRole('user');
       $user->created_at = fake()->dateTimeBetween('-1 year', 'now');
       $user->save();
@@ -38,7 +51,13 @@ class DatabaseSeeder extends Seeder
 
 
     $user = User::find(1);
-    $user->assignRole('admin');
+    $user->assignRole('Super Admin');
+
+    $user = User::find(2);
+    $user->assignRole('Admin');
+
+    $user = User::find(3);
+    $user->assignRole('User');
 
     Patient::factory()->count(2000)->create();
     FinancialType::factory()->count(100)->create();

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, MailIcon, PlusCircleIcon  } from "lucide-react";
 import { Link, usePage } from "@inertiajs/react";
 
 import {
@@ -19,6 +19,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/Components/ui/sidebar";
+import { Button } from "@/Components/ui/button";
 export function NavMain({ items }) {
   const { url } = usePage(); // Get the current route
   return (

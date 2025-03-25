@@ -8,14 +8,16 @@ use App\Models\CashAdvance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
 
 class CashAdvanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
+  /**
+   * Display a listing of the resource.
+   */
+  public function index()
+  {
+    Gate::authorize('viewAny', CashAdvance::class);
 
 
     $cashAdvance = CashAdvance::orderBy('date_added', 'desc')->get();
@@ -26,19 +28,19 @@ class CashAdvanceController extends Controller
         'cashAdvances' => CashAdvanceResource::collection($cashAdvance),
       ]
     );
-    }
+  }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(CashAdvanceRequest $request)
-    {
+  /**
+   * Store a newly created resource in storage.
+   */
+  public function store(CashAdvanceRequest $request)
+  {
 
-      CashAdvance::create($request->validated());
+    CashAdvance::create($request->validated());
 
-      return redirect()->route('cash_advances.index')
-        ->with('success', 'Cash Advance created successfully!');
-    }
+    return redirect()->route('cash_advances.index')
+      ->with('success', 'Cash Advance created successfully!');
+  }
 
   /**
    * Display the specified resource.

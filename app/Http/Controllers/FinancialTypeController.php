@@ -9,6 +9,7 @@ use App\Models\FinancialType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Gate;
 
 class FinancialTypeController extends Controller
 {
@@ -17,6 +18,8 @@ class FinancialTypeController extends Controller
    */
   public function index()
   {
+
+    Gate::authorize('viewAny', FinancialType::class);
 
     $financialType = FinancialType::orderBy('type', 'asc')->get();
 

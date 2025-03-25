@@ -79,9 +79,9 @@ export default function Index({ auth }) {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Selected Users</DialogTitle>
+            <DialogTitle>Delete Selected {`${TITLE}`}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the user? This action cannot be
+              Are you sure you want to delete the {`${TITLE}`}? This action cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
@@ -93,7 +93,7 @@ export default function Index({ auth }) {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete User
+                Delete {`${TITLE}`}
             </Button>
           </DialogFooter>
         </DialogContent>

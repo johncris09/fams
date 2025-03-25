@@ -9,13 +9,20 @@ use App\Models\Patient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
+
+
 class PatientController extends Controller
 {
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(User $user)
   {
+
+    Gate::authorize('viewAny', Patient::class);
+
     $patients = Patient::orderBy('id', 'desc')->get();
 
     return Inertia::render(
@@ -76,9 +83,9 @@ class PatientController extends Controller
    */
   public function update(PatientRequest $request, Patient $patient)
   {
-      $patient->update($request->validated());
+    $patient->update($request->validated());
 
-      return redirect()->route('patients.index')->with('success', 'Patient updated successfully.');
+    return redirect()->route('patients.index')->with('success', 'Patient updated successfully.');
   }
 
   /**
@@ -90,6 +97,6 @@ class PatientController extends Controller
     $id = $request->id;
 
     Patient::destroy($id);
-    return Redirect::route('patients.index', ['message' => 'Patient deleted successfully']);
+    return redirect()->route('patients.index', ['message' => 'Patient deleted successfully']);
   }
 }

@@ -9,6 +9,7 @@ use App\Models\Claimant;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Gate;
 
 class ClaimantController extends Controller
 {
@@ -17,6 +18,8 @@ class ClaimantController extends Controller
    */
   public function index()
   {
+
+    Gate::authorize('viewAny', Claimant::class);
 
     $claimants = Claimant::orderBy('id', 'desc')->get();
 

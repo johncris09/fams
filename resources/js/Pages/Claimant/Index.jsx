@@ -45,7 +45,7 @@ export default function Index({ auth }) {
     });
   };
   const columns = useMemo(
-    () => getColumns(handleOpenModal, handleShowDeleteDialog),
+    () => getColumns(auth, handleOpenModal, handleShowDeleteDialog),
     []
   );
   return (
@@ -58,6 +58,7 @@ export default function Index({ auth }) {
             <h1 className="text-2xl font-bold">{`${TITLE}`}s</h1>
           </div>
           <DataTable
+            auth={auth}
             columns={columns}
             data={claimants.data}
             onEdit={handleOpenModal}
@@ -79,10 +80,10 @@ export default function Index({ auth }) {
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Selected Users</DialogTitle>
+            <DialogTitle>Delete Selected {`${TITLE}`}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the user? This action cannot be
-              undone.
+              Are you sure you want to delete the {`${TITLE}`}? This action
+              cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -93,7 +94,7 @@ export default function Index({ auth }) {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete User
+              Delete {`${TITLE}`}
             </Button>
           </DialogFooter>
         </DialogContent>

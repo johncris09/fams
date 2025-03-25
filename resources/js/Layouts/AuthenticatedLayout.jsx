@@ -9,13 +9,14 @@ import { Separator } from "@/Components/ui/separator";
 import { Breadcrumbs } from "@/Components/Breadcrumb";
 import { ToastContainer } from "react-toastify";
 import { NavUser } from "@/Components/nav-user";
+import { usePage } from "@inertiajs/react";
 
-export default function Layout({ children }) {
+export default function Layout({  children }) {
   const [open, setOpen] = useState(true);
-
+  const {auth} = usePage().props;
   return (
     <SidebarProvider defaultOpen={true} open={open} onOpenChange={setOpen}>
-      <AppSidebar />
+      <AppSidebar auth={auth.user}/>
 
       <SidebarInset className=" !mt-0">
         <header className="flex sticky top-0 z-10 gap-2 items-center h-16 border-b shrink-0 bg-background">

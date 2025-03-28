@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Database\QueryException;
 use App\Http\Requests\PatientRequest;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Resources\PatientResource;
@@ -49,12 +50,23 @@ class PatientController extends Controller
    */
   public function store(PatientRequest $request)
   {
-    // Create a new patient record
-    Patient::create($request->validated());
 
-    return redirect()->route('patients.index')
-      ->with('success', 'Patient created successfully!');
+    try {
+      Patient::create($request->validated());
 
+      return redirect()->route('patients.index')
+        ->with('success', 'Patient created successfully!');
+    } catch (QueryException $e) {
+      if ($e->errorInfo[1] == 1062) { // MySQL error code for duplicate entry
+        return redirect()->back()
+          ->withInput() // Keeps old input values
+          ->with('error', 'A patient with the same details already exists. Please check your input.');
+      }
+
+      return redirect()->back()
+        ->withInput()
+        ->with('error', 'An unexpected error occurred. Please try again.');
+    }
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ClaimantRequest extends FormRequest
@@ -23,19 +24,28 @@ class ClaimantRequest extends FormRequest
   {
 
     return [
-      'first_name' => 'required|string|max:255',
+
+      'first_name' => [
+        'required',
+        'string',
+        'max:255',
+        Rule::unique('claimants')->where(function ($query) {
+          return $query->where('last_name', request('last_name'));
+        })->ignore($this->route('claimant')), // Ignore the current record
+      ],
       'middle_name' => 'nullable|string|max:255',
       'last_name' => 'required|string|max:255',
       'suffix' => 'nullable|string|max:50',
       'birthdate' => 'required|date',
-      'gender' => 'required|in:male,female',
-      'marital_status' => 'required|in:single,married,divorced,widowed'
+      'gender' => 'required|in:Male,Female',
+      'marital_status' => 'required|in:Single,Married,Divorced,Widowed'
     ];
   }
 
   public function messages(): array
   {
     return [
+      'first_name.unique' => 'The name has already been taken.',
       'first_name.required' => 'First name is required.',
       'last_name.required' => 'Last name is required.',
       'birthdate.required' => 'Birthdate is required.',

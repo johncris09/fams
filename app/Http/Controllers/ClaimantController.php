@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Database\QueryException;
 use App\Http\Requests\ClaimantRequest;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Resources\ClaimantResource;
@@ -47,10 +47,23 @@ class ClaimantController extends Controller
    */
   public function store(ClaimantRequest $request)
   {
-    Claimant::create($request->validated());
+    try {
+      Claimant::create($request->validated());
 
-    return redirect()->route('claimants.index')
-      ->with('success', 'Claimant created successfully!');
+      return redirect()->route('claimants.index')
+        ->with('success', 'Claimant created successfully!');
+    } catch (QueryException $e) {
+      if ($e->errorInfo[1] == 1062) { // MySQL error code for duplicate entry
+        return redirect()->back()
+          ->withInput() // Keeps old input values
+          ->with('error', 'A claimant with the same details already exists. Please check your input.');
+      }
+
+      return redirect()->back()
+        ->withInput()
+        ->with('error', 'An unexpected error occurred. Please try again.');
+    }
+
   }
 
   /**

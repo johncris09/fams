@@ -9,10 +9,19 @@ class Claimant extends Model
 {
 
   use HasFactory;
-  protected $fillable = ['first_name', 'middle_name', 'last_name', 'suffix', 'birthdate', 'gender', 'marital_status'];
+  protected $fillable = [
+    'first_name',
+    'middle_name',
+    'last_name',
+    'suffix',
+    'birthdate',
+    'gender',
+    'marital_status'
+  ];
 
 
-  public function claims() {
+  public function claims()
+  {
     return $this->hasMany(Claim::class);
-}
+  }
 }

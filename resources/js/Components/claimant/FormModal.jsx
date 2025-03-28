@@ -1,3 +1,11 @@
+import InputError from "@/Components/InputError";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +23,7 @@ import { ToastContainer, toast } from "react-toastify";
 
 const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
+
   const { data, setData, post, processing, reset, patch } = useForm({
     first_name: "",
     last_name: "",
@@ -24,7 +33,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     gender: "",
     marital_status: "",
   });
-
+  console.info(selectedData);
   useEffect(() => {
     if (selectedData) {
       setData({
@@ -43,14 +52,14 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (claimant) {
+
+    if (selectedData) {
       patch(route("claimants.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
           toast.success(`${title} updated successfully!`);
           onClose();
         },
-        onError: (errors) => console.error(errors),
       });
     } else {
       post(route("claimants.store"), {
@@ -61,6 +70,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       });
     }
   };
+
   return (
     <>
       <ToastContainer />
@@ -83,9 +93,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Last Name"
                   onChange={(e) => setData("last_name", e.target.value)}
                 />
-                {errors.last_name && (
-                  <p className="text-red-500"> {errors.last_name}</p>
-                )}
+                <InputError message={errors.last_name} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="first-name">First Name</Label>
@@ -96,9 +104,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   onChange={(e) => setData("first_name", e.target.value)}
                 />
 
-                {errors.first_name && (
-                  <p className="text-red-500"> {errors.first_name}</p>
-                )}
+                <InputError message={errors.first_name} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="middle-name">Middle Name (Optional)</Label>
@@ -132,34 +138,46 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Birthdate"
                   onChange={(e) => setData("birthdate", e.target.value)}
                 />
+
+                <InputError message={errors.birthdate} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="gender">Gender</Label>
-                <Input
-                  type="text"
+                <Select
                   id="gender"
-                  label="Gender"
                   value={data.gender}
-                  placeholder="Gender"
-                  onChange={(e) => setData("gender", e.target.value)}
-                />
-                {errors.gender && (
-                  <p className="text-red-500"> {errors.gender}</p>
-                )}
+                  name="gender"
+                  onValueChange={(value) => setData("gender", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+                <InputError message={errors.gender} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="marital-status">Marital Status</Label>
-                <Input
-                  type="text"
-                  id="marital-status"
-                  label="Marital Status"
+                <Select
+                  id="marital_status"
                   value={data.marital_status}
-                  placeholder="Marital Status"
-                  onChange={(e) => setData("marital_status", e.target.value)}
-                />
-                {errors.marital_status && (
-                  <p className="text-red-500"> {errors.marital_status}</p>
-                )}
+                  name="marital_status"
+                  onValueChange={(value) => setData("marital_status", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Marital Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Single">Single</SelectItem>
+                    <SelectItem value="Married">Married</SelectItem>
+                    <SelectItem value="Divorced">Divorced</SelectItem>
+                    <SelectItem value="Widowed">Widowed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <InputError message={errors.marital_status} className="mt-2" />
               </div>
             </div>
             <DialogFooter className="mt-4">

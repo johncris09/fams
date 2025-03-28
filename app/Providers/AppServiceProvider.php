@@ -36,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
 
     // Share flash messages globally in Inertia
     Inertia::share([
+      'appName' => config('app.name'),
+      'projectFullName' => config('app.project_full_name'),
       'flash' => function () {
         return [
           'success' => session('success'),

@@ -1,18 +1,21 @@
 import {
-  CreditCard, GroupIcon,
-  LayoutDashboard, UserCheck2,
-  UserIcon
+  CreditCard,
+  FileIcon,
+  FilesIcon,
+  GroupIcon,
+  LayoutDashboard,
+  UserCheck2,
+  UserIcon,
 } from "lucide-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter, SidebarRail
+  SidebarFooter,
+  SidebarRail,
 } from "@/components/ui/sidebar";
-import {
-  ChecklistOutlined, SickOutlined
-} from "@mui/icons-material";
+import { ChecklistOutlined, SickOutlined } from "@mui/icons-material";
 import { usePage } from "@inertiajs/react";
 
 export function AppSidebar({ ...props }) {
@@ -28,6 +31,12 @@ export function AppSidebar({ ...props }) {
         url: route("dashboard"),
         icon: LayoutDashboard,
         isActive: true,
+        roles: ["Super Admin", "Admin", "User"],
+      },
+      {
+        title: "Claims",
+        url: route("claims.index"),
+        icon: FilesIcon,
         roles: ["Super Admin", "Admin", "User"],
       },
       {
@@ -58,13 +67,13 @@ export function AppSidebar({ ...props }) {
         title: "Users",
         url: route("users.index"),
         icon: UserIcon,
-        roles: ["Super Admin" ],
+        roles: ["Super Admin"],
       },
       {
         title: "Roles",
         url: route("roles.index"),
         icon: GroupIcon,
-        roles: ["Super Admin" ],
+        roles: ["Super Admin"],
       },
     ],
   };

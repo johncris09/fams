@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
+
 const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
 
@@ -78,9 +79,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Last Name"
                   onChange={(e) => setData("last_name", e.target.value)}
                 />
-                {errors.last_name && (
-                  <p className="text-red-500"> {errors.last_name}</p>
-                )}
+                  <InputError message={errors.last_name} className="mt-2" />
+
+
               </div>
               <div>
                 <Label htmlFor="first-name">First Name</Label>
@@ -91,9 +92,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   onChange={(e) => setData("first_name", e.target.value)}
                 />
 
-                {errors.first_name && (
-                  <p className="text-red-500"> {errors.first_name}</p>
-                )}
+                <InputError message={errors.first_name} className="mt-2" />
+
+
               </div>
               <div>
                 <Label htmlFor="middle-name">Middle Name (Optional)</Label>

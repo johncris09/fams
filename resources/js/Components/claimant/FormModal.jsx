@@ -33,7 +33,6 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     gender: "",
     marital_status: "",
   });
-  console.info(selectedData);
   useEffect(() => {
     if (selectedData) {
       setData({

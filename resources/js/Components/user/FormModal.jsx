@@ -87,7 +87,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   onChange={(e) => setData("name", e.target.value)}
                 />
 
-                {errors.name && <p className="text-red-500"> {errors.name}</p>}
+                <InputError message={errors.name} className="mt-2" />
               </div>
 
               <div>
@@ -99,9 +99,8 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Email"
                   onChange={(e) => setData("email", e.target.value)}
                 />
-                {errors.email && (
-                  <p className="text-red-500"> {errors.email}</p>
-                )}
+
+                <InputError message={errors.email} className="mt-2" />
               </div>
               <div>
                 <Label className="text-primary" htmlFor="file">

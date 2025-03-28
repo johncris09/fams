@@ -12,6 +12,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
+import InputError from "@/Components/InputError";
 
 const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const { errors, permissions } = usePage().props;
@@ -73,8 +74,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Name"
                   onChange={(e) => setData("name", e.target.value)}
                 />
-
-                {errors.name && <p className="text-red-500"> {errors.name}</p>}
+                <InputError message={errors.name} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="permission">Permission</Label>
@@ -109,10 +109,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                     </label>
                   </div>
                 ))}
-
-                {errors.permission && (
-                  <p className="text-red-500"> {errors.permission}</p>
-                )}
+                <InputError message={errors.permission} className="mt-2" />
               </div>
             </div>
             <DialogFooter className="mt-4">

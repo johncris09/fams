@@ -12,6 +12,8 @@ import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
+import InputError from "@/Components/InputError";
+
 
 const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
@@ -76,9 +78,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Type"
                   onChange={(e) => setData("type", e.target.value)}
                 />
+ <InputError message={errors.type} className="mt-2" />
 
-                {errors.type && <p className="text-red-500"> {errors.type}</p>}
-              </div>
+                    </div>
               <div>
                 <Label htmlFor="amount">Amount</Label>
                 <Input
@@ -90,8 +92,8 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   onChange={(e) => setData("amount", e.target.value)}
                 />
 
-                {errors.amount && <p className="text-red-500"> {errors.amount}</p>}
-              </div>
+<InputError message={errors.amount} className="mt-2" />
+                  </div>
               <div>
                 <Label htmlFor="description">Description</Label>
 

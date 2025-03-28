@@ -12,7 +12,7 @@ import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
-
+import InputError from "@/Components/InputError";
 
 const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;

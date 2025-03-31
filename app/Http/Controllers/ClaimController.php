@@ -89,15 +89,15 @@ class ClaimController extends Controller
     // Check if a similar record exists in the last 3 months
     $existingClaim = Claim::where(function ($query) use ($claimantId, $patientId, $financialTypeId) {
       $query->where('claimant_id', $claimantId)
-        ->orWhere('patient_id', $patientId)
-        ->orWhere('financial_type_id', $financialTypeId);
+        ->where('patient_id', $patientId)
+        ->where('financial_type_id', $financialTypeId);
     })
       ->where('claim_date', '>=', now()->subMonths(3)) // Check the last 3 months
       ->exists();
 
     if ($existingClaim) {
       return redirect()->route('claims.index')
-      ->with('error', 'A claim for this financial assistance type has already been made by this claimant and patient within the last 3 months. Please check the latest transaction date.');
+        ->with('error', 'A claim for this financial assistance type has already been made by this claimant and patient within the last 3 months. Please check the latest transaction date.');
     }
 
 
@@ -129,7 +129,29 @@ class ClaimController extends Controller
   public function update(ClaimRequest $request, Claim $claim)
   {
 
-    $claim->update($request->validated());
+    // Validate the request
+    $validated = $request->validated();
+
+    // Extract necessary fields
+    $claimantId = $validated['claimant_id'];
+    $patientId = $validated['patient_id'];
+    $financialTypeId = $validated['financial_type_id'];
+
+    // Check if a similar record exists in the last 3 months
+    $existingClaim = Claim::where('claimant_id', $claimantId)
+    ->where('patient_id', $patientId)
+    ->where('financial_type_id', $financialTypeId)
+    ->where('claim_date', '>=', now()->subMonths(3)) // Check the last 3 months
+    ->where('id', '!=', $claim->id) // Exclude the current record
+    ->exists();
+
+    if ($existingClaim) {
+      return redirect()->route('claims.index')
+        ->with('error', 'A claim for this financial assistance type has already been made by this claimant and patient within the last 3 months. Please check the latest transaction date.');
+    }
+
+    // Update the claim
+    $claim->update($validated);
 
     return redirect()->route('claims.index')->with('success', 'Claim updated successfully.');
 
@@ -138,8 +160,14 @@ class ClaimController extends Controller
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Claim $claim)
+  public function destroy(Request $request, Claim $claim)
   {
-    //
+    // get the id parameter from the request
+    $id = $request->id;
+
+    Claim::destroy($id);
+
+    return redirect()->route('claims.index')->with('success', 'Claim deleted successfully.');
+
   }
 }

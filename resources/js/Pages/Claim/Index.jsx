@@ -1,5 +1,4 @@
-"use client";
-
+import { useMemo, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +9,11 @@ import {
 } from "@/Components/ui/dialog";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
-import { useMemo, useState } from "react";
 import { Card, CardContent } from "@mui/material";
 import { DataTable } from "@/Components/claim/data-table";
 import { getColumns } from "@/Components/claim/columns";
 import { Button } from "@/Components/ui/button";
-import {  toast } from 'react-toastify'
+import { toast } from "react-toastify";
 import FormModal from "@/Components/claim/FormModal";
 const TITLE = "Claim";
 
@@ -39,7 +37,7 @@ export default function Index({ auth }) {
     router.delete(route("claims.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
-              toast.success(`${TITLE} deleted successfully` );
+        toast.success(`${TITLE} deleted successfully`);
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
@@ -81,8 +79,8 @@ export default function Index({ auth }) {
           <DialogHeader>
             <DialogTitle>Delete Selected {`${TITLE}`}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the {`${TITLE}`}? This action cannot be
-              undone.
+              Are you sure you want to delete the {`${TITLE}`}? This action
+              cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -93,7 +91,7 @@ export default function Index({ auth }) {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-                Delete {`${TITLE}`}
+              Delete {`${TITLE}`}
             </Button>
           </DialogFooter>
         </DialogContent>

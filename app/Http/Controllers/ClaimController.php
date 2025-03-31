@@ -2,62 +2,144 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ClaimRequest;
+use App\Http\Resources\BarangayResource;
+use App\Http\Resources\ClaimantResource;
+use App\Http\Resources\FinancialTypeResource;
+use App\Http\Resources\PatientResource;
+use App\Models\Barangay;
 use App\Models\Claim;
+use App\Models\Claimant;
+use App\Models\FinancialType;
+use App\Models\Patient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
 
 class ClaimController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-      $claims = Claim::with([
-        'patient',
-        'claimant',
-        'financialType',
-        'barangay'])
-        ->orderBy('id', 'desc')
-        ->get();
+  /**
+   * Display a listing of the resource.
+   */
+  public function index(Request $request)
+  {
 
-      return Inertia::render(
-        'Claim/Index',
-        [
-          'claims' => $claims,
-        ]
-      );
+
+    Gate::authorize('viewAny', Claim::class);
+
+
+    $year = $request->year ?? date('Y'); // Get year from request or default to current year
+
+
+    if (isset($request->year) && $request->year != null) {
+      $year = $request->year;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+
+    // Fetch latest control number for the selected year
+    $lastClaim = Claim::where('app_year', $year)
+      ->orderBy('control_number', 'desc')
+      ->first();
+
+    // Generate next control number
+    $control_number = $lastClaim ? Claim::generateControlNumber() : Claim::generateControlNumber();
+
+
+    $claims = Claim::with([
+      'patient',
+      'claimant',
+      'financialType',
+      'barangay'
+    ])
+      ->where('app_year', $year)
+      ->orderBy('id', 'desc')
+      ->get();
+
+    $barangays = Barangay::orderBy('barangay', 'asc')->get();
+    $claimants = Claimant::orderBy('last_name', 'asc')->get();
+    $patients = Patient::orderBy('last_name', 'asc')->get();
+    $financialType = FinancialType::orderBy('type', 'asc')->get();
+
+    return Inertia::render(
+      'Claim/Index',
+      [
+        'claims' => $claims,
+        'appYear' => $year,
+        'appMonth' => date('m'),
+        'controlNumber' => $control_number,
+        'barangays' => BarangayResource::collection($barangays),
+        'claimants' => ClaimantResource::collection($claimants),
+        'patients' => PatientResource::collection($patients),
+        'financialTypes' => FinancialTypeResource::collection($financialType),
+
+      ]
+    );
+  }
+  public function store(ClaimRequest $request)
+  {
+
+    // Validate the request
+    $validated = $request->validated();
+
+    // Extract necessary fields
+    $claimantId = $validated['claimant_id'];
+    $patientId = $validated['patient_id'];
+    $financialTypeId = $validated['financial_type_id'];
+
+    // Check if a similar record exists in the last 3 months
+    $existingClaim = Claim::where(function ($query) use ($claimantId, $patientId, $financialTypeId) {
+      $query->where('claimant_id', $claimantId)
+        ->orWhere('patient_id', $patientId)
+        ->orWhere('financial_type_id', $financialTypeId);
+    })
+      ->where('claim_date', '>=', now()->subMonths(3)) // Check the last 3 months
+      ->exists();
+
+    if ($existingClaim) {
+      return redirect()->route('claims.index')
+      ->with('error', 'A claim for this financial assistance type has already been made by this claimant and patient within the last 3 months. Please check the latest transaction date.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Claim $claim)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Claim $claim)
-    {
-        //
-    }
+    // Add the generated control number before saving
+    $validated['control_number'] = Claim::generateControlNumber();
+    $validated['app_year'] = date('Y');
+    $validated['app_month'] = date('m');
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Claim $claim)
-    {
-        //
-    }
+    // Create the claim
+    Claim::create($validated);
+
+
+    return redirect()->route('claims.index')
+      ->with('success', 'Claim created successfully!');
+
+  }
+
+  /**
+   * Display the specified resource.
+   */
+  public function show(Claim $claim)
+  {
+    //
+  }
+
+  /**
+   * Update the specified resource in storage.
+   */
+  public function update(ClaimRequest $request, Claim $claim)
+  {
+
+    $claim->update($request->validated());
+
+    return redirect()->route('claims.index')->with('success', 'Claim updated successfully.');
+
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   */
+  public function destroy(Claim $claim)
+  {
+    //
+  }
 }

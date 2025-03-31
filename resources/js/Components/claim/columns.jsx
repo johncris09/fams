@@ -1,7 +1,15 @@
 "use client";
 
 import DataTableColumnHeader from "../data-table-components/data-table-column-header";
-import { DeleteIcon, EditIcon, LucidePrinter, MoreHorizontal, Printer, PrinterCheck, PrinterIcon } from "lucide-react";
+import {
+  DeleteIcon,
+  EditIcon,
+  LucidePrinter,
+  MoreHorizontal,
+  Printer,
+  PrinterCheck,
+  PrinterIcon,
+} from "lucide-react";
 import { Checkbox } from "@/Components/ui/checkbox";
 import { Button } from "@/Components/ui/button";
 import {
@@ -16,28 +24,6 @@ import { Pencil1Icon } from "@radix-ui/react-icons";
 
 export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       id: "actions",
       header: ({ column }) => (
@@ -55,7 +41,7 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                handleOpenModal(row.original);
+                // handleOpenModal(row.original);
               }}
             >
               Print
@@ -92,26 +78,24 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
     },
 
     {
-      accessorKey: "patient_id",
+      accessorKey: "control_number",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Patient" />
+        <DataTableColumnHeader column={column} title="Control Number" />
       ),
       cell: ({ row }) => {
-        const { last_name, first_name, middle_name, suffix } =
-          row.original.patient;
+        const control_number = row.original.control_number || "0000";
+        const app_month = row.original.app_month || "01";
+        const app_year = row.original.app_year || "0000";
 
         return (
           <div className="w-[200px] capitalize">
-            {`${last_name}, ${first_name} ${middle_name || ""} ${
-              suffix || ""
-            }`.trim()}
+            {`${app_year}-${app_month.toString().padStart(2, "0")}-${control_number.toString().padStart(4, "0")}`}
           </div>
         );
       },
       enableSorting: true,
       enableHiding: true,
     },
-
     {
       accessorKey: "claimant_id",
       header: ({ column }) => (
@@ -134,6 +118,39 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
     },
 
     {
+      accessorKey: "claimant_id",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Claimant's Gender" />
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className=" capitalize">{row.original.claimant.gender}</div>
+        );
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "patient_id",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Patient" />
+      ),
+      cell: ({ row }) => {
+        const { last_name, first_name, middle_name, suffix } =
+          row.original.patient;
+
+        return (
+          <div className="w-[200px] capitalize">
+            {`${last_name}, ${first_name} ${middle_name || ""} ${
+              suffix || ""
+            }`.trim()}
+          </div>
+        );
+      },
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
       accessorKey: "financial_type_id",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Financial Type" />
@@ -141,6 +158,30 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
 
       cell: ({ row }) => (
         <div className=" capitalize">{row.original.financial_type.type}</div>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "purok",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Purok" />
+      ),
+
+      cell: ({ row }) => (
+        <div className=" capitalize">{row.original.purok}</div>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "barangay_id",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Barangay" />
+      ),
+
+      cell: ({ row }) => (
+        <div className=" capitalize w-[200px]">{row.original.barangay.barangay}</div>
       ),
       enableSorting: true,
       enableHiding: true,
@@ -169,23 +210,25 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
       },
     },
     {
-      accessorKey: "purpose",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Purpose" />
-      ),
-      cell: ({ row }) => (
-        <div className=" capitalize">{row.getValue("purpose")}</div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-    },
-    {
       accessorKey: "claim_date",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Claim Date" />
       ),
       cell: ({ row }) => (
         <div className=" capitalize">{row.getValue("claim_date")}</div>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+
+    {
+      accessorKey: "purpose",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Purpose" />
+      ),
+
+      cell: ({ row }) => (
+        <div className=" capitalize w-[500px]">{row.original.purpose}</div>
       ),
       enableSorting: true,
       enableHiding: true,

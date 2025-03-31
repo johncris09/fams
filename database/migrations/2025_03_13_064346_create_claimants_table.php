@@ -17,8 +17,8 @@ return new class extends Migration {
       $table->string('last_name');
       $table->string('suffix')->nullable();
       $table->date('birthdate');
-      $table->enum('gender', ['male', 'female', 'other']);
-      $table->enum('marital_status', ['single', 'married', 'divorced', 'widowed']);
+      $table->enum('gender', ['Male', 'Female', 'other']);
+      $table->enum('marital_status', ['Single', 'Married', 'Divorced', 'Widowed']);
       $table->timestamps();
     });
   }

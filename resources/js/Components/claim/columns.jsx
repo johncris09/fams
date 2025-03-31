@@ -118,7 +118,7 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
     },
 
     {
-      accessorKey: "claimant_id",
+      accessorKey: "claimant.gender",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Claimant's Gender" />
       ),

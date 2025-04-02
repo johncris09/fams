@@ -22,7 +22,7 @@ import {
 } from "@/Components/ui/dropdown-menu";
 import { Pencil1Icon } from "@radix-ui/react-icons";
 
-export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
+export const getColumns = (handlePrintTemplate, handleOpenModal, handleShowDeleteDialog) => {
   return [
     {
       id: "actions",
@@ -41,7 +41,7 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                // handleOpenModal(row.original);
+                handlePrintTemplate(row.original);
               }}
             >
               Print
@@ -181,7 +181,7 @@ export const getColumns = (handleOpenModal, handleShowDeleteDialog) => {
       ),
 
       cell: ({ row }) => (
-        <div className=" capitalize w-[200px]">{row.original.barangay.barangay}</div>
+        <div className=" capitalize ">{row.original.barangay.barangay}</div>
       ),
       enableSorting: true,
       enableHiding: true,

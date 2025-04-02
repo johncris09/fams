@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Claim;
+use App\Models\Claimant;
+use App\Models\FinancialType;
+use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,9 +17,26 @@ class DashboardController extends Controller
    */
   public function index()
   {
+
+    $financialAssistanceTypes = FinancialType::with('claims')->get();
+
+    // total amount by financial assistance types
+    $totalAmountByFinancialAssistanceTypes = $financialAssistanceTypes->map(function ($type) {
+      return [
+        'type' => $type->type,
+        'total_amount' => number_format($type->claims->sum('amount') ?? 0, 2, '.', ',')
+      ];
+    });
+
     return Inertia::render(
       'Dashboard/Index',
-
+      [
+        'totalUsers' => User::count(), // where year = now
+        'totalPatients' => Patient::count(),
+        'totalClaimants' => Claimant::count(),
+        'totalClaims' => Claim::count(),
+        'totalAmountByFinancialAssistanceTypes' => $totalAmountByFinancialAssistanceTypes,
+      ]
     );
   }
 

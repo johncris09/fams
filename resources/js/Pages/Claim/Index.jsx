@@ -1,4 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { Users2, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -13,12 +16,15 @@ import { Card, CardContent } from "@mui/material";
 import { DataTable } from "@/Components/claim/data-table";
 import { getColumns } from "@/Components/claim/columns";
 import { Button } from "@/Components/ui/button";
-import { toast } from "react-toastify";
 import FormModal from "@/Components/claim/FormModal";
+import StatCard from "../Dashboard/StatCard";
+import { Female, FemaleRounded, Male, MaleRounded } from "@mui/icons-material";
 const TITLE = "Claim";
 
 export default function Index({ auth }) {
-  const { claims } = usePage().props;
+  const { claims, flash, claimantsByGender } = usePage().props;
+  const { toast } = useToast();
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -32,12 +38,10 @@ export default function Index({ auth }) {
     setShowDeleteDialog(true);
     setSelectedData(data);
   };
-
   const handleDelete = () => {
     router.delete(route("claims.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success(`${TITLE} deleted successfully`);
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
@@ -50,6 +54,25 @@ export default function Index({ auth }) {
   return (
     <AuthenticatedLayout auth_user={auth.user} header="Users">
       <Head title={`${TITLE}s`} />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
+        <StatCard
+          title="Female"
+          description="Total Female"
+          value={claimantsByGender.female}
+          icon={<FemaleRounded className="h-5 w-5 text-white" />}
+          gradientFrom="blue"
+          gradientTo="blue"
+        />
+        <StatCard
+          title="Female"
+          description="Total Female"
+          value={claimantsByGender.male}
+          icon={<Male className="h-5 w-5 text-white" />}
+          gradientFrom="red"
+          gradientTo="red"
+        />
+      </div>
 
       <Card>
         <CardContent>

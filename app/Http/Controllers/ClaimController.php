@@ -24,7 +24,6 @@ class ClaimController extends Controller
   public function index(Request $request)
   {
 
-
     Gate::authorize('viewAny', Claim::class);
 
 
@@ -60,6 +59,18 @@ class ClaimController extends Controller
     $patients = Patient::orderBy('last_name', 'asc')->get();
     $financialType = FinancialType::orderBy('type', 'asc')->get();
 
+    // Count claims by claimant gender
+    $genderCounts = $claims->groupBy(fn($claim) => strtolower($claim->claimant->gender))
+      ->map->count()
+      ->toArray();
+
+    // Ensure both keys exist
+    $formattedCounts = [
+      'female' => $genderCounts['female'] ?? 0,
+      'male' => $genderCounts['male'] ?? 0
+    ];
+
+
     return Inertia::render(
       'Claim/Index',
       [
@@ -71,6 +82,7 @@ class ClaimController extends Controller
         'claimants' => ClaimantResource::collection($claimants),
         'patients' => PatientResource::collection($patients),
         'financialTypes' => FinancialTypeResource::collection($financialType),
+        'claimantsByGender' => $formattedCounts,
 
       ]
     );
@@ -139,11 +151,11 @@ class ClaimController extends Controller
 
     // Check if a similar record exists in the last 3 months
     $existingClaim = Claim::where('claimant_id', $claimantId)
-    ->where('patient_id', $patientId)
-    ->where('financial_type_id', $financialTypeId)
-    ->where('claim_date', '>=', now()->subMonths(3)) // Check the last 3 months
-    ->where('id', '!=', $claim->id) // Exclude the current record
-    ->exists();
+      ->where('patient_id', $patientId)
+      ->where('financial_type_id', $financialTypeId)
+      ->where('claim_date', '>=', now()->subMonths(3)) // Check the last 3 months
+      ->where('id', '!=', $claim->id) // Exclude the current record
+      ->exists();
 
     if ($existingClaim) {
       return redirect()->route('claims.index')

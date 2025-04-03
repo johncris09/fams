@@ -16,17 +16,22 @@ class ClaimantController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
 
     Gate::authorize('viewAny', Claimant::class);
 
-    $claimants = Claimant::orderBy('id', 'desc')->get();
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+    $claimants = Claimant::orderBy('id', 'desc')->paginate($perPage);
 
     return Inertia::render(
       'Claimant/Index',
       [
         'claimants' => ClaimantResource::collection($claimants),
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }

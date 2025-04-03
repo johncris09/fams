@@ -21,7 +21,8 @@ const TITLE = "Patient";
 
 export default function Index({ auth }) {
   const { toast } = useToast();
-  const { patients } = usePage().props;
+  const { patients, filters } = usePage().props;
+
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -65,6 +66,8 @@ export default function Index({ auth }) {
             auth={auth}
             columns={columns}
             data={patients.data}
+            filters={filters}
+            meta={patients.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

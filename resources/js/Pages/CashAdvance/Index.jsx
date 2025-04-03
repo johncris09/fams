@@ -21,7 +21,7 @@ const TITLE = "Cash Advance";
 
 export default function Index({ auth }) {
   const { toast } = useToast();
-  const { cashAdvances } = usePage().props;
+  const { cashAdvances, filters } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -65,6 +65,8 @@ export default function Index({ auth }) {
             auth={auth}
             columns={columns}
             data={cashAdvances.data}
+            filters={filters}
+            meta={cashAdvances.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

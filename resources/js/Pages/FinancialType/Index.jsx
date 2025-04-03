@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 const TITLE = "Financial Type";
 export default function Index({ auth }) {
   const { toast } = useToast();
-  const { financialTypes } = usePage().props;
+  const { financialTypes, filters } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -65,6 +65,8 @@ export default function Index({ auth }) {
             auth={auth}
             columns={columns}
             data={financialTypes.data}
+            filters={filters}
+            meta={financialTypes.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

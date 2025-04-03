@@ -25,9 +25,8 @@ import {
 import { DataTablePagination } from "../data-table-components/data-table-pagination";
 import { DataTableViewOptions } from "../data-table-components/data-table-view-options";
 
-export function DataTable({ columns, data, onAdd, auth }) {
+export function DataTable({ columns, data, meta, filters, onAdd, auth }) {
   const userPermissions = auth.user?.permissions || [];
-
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -142,7 +141,7 @@ export function DataTable({ columns, data, onAdd, auth }) {
         </Table>
       </div>
 
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} meta={meta} filters={filters} />
     </div>
   );
 }

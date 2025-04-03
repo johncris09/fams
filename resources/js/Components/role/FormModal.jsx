@@ -12,10 +12,9 @@ import { useEffect } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
-import { toast } from "sonner";
 import InputError from "@/Components/InputError";
 
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({toast,  title, isOpen, onClose, selectedData }) => {
   const { errors, permissions } = usePage().props;
   const { data, setData, post, processing, reset, patch } = useForm({
     name: "",
@@ -40,7 +39,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       patch(route("roles.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
         onError: (errors) => console.error(errors),
@@ -48,7 +49,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("roles.store"), {
         onSuccess: () => {
-          toast.success(`${title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
         },
       });

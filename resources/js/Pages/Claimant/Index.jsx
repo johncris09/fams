@@ -20,7 +20,7 @@ import FormModal from "@/Components/claimant/FormModal";
 const TITLE = "Claimant";
 export default function Index({ auth }) {
   const { toast } = useToast();
-  const { claimants } = usePage().props;
+  const { claimants, filters } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -64,6 +64,8 @@ export default function Index({ auth }) {
             auth={auth}
             columns={columns}
             data={claimants.data}
+            filters={filters}
+            meta={claimants.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

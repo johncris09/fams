@@ -23,8 +23,10 @@ import { useToast } from "@/hooks/use-toast";
 const TITLE = "Claim";
 
 export default function Index({ auth }) {
-  const { claims, flash, claimantsByGender } = usePage().props;
   const { toast } = useToast();
+  const { claims,filters,  claimantsByGender } = usePage().props;
+
+
   const componentRef = useRef(null); // Reference to the component
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -36,10 +38,6 @@ export default function Index({ auth }) {
     router.reload({ only: [] });
     setSelectedData(data);
     setModalOpen(true);
-  };
-  const handlePrintModalOpen = (data = null) => {
-    setSelectedData(data);
-    setPrintModalOpen(true);
   };
   function calculateAge(birthdate) {
     const birth = new Date(birthdate);
@@ -212,7 +210,9 @@ export default function Index({ auth }) {
           </div>
           <DataTable
             columns={columns}
-            data={claims}
+            data={claims.data}
+            filters={filters}
+            meta={claims.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

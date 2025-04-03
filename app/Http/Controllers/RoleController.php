@@ -16,18 +16,25 @@ class RoleController extends Controller
    * Display a listing of the resource.
    */
 
-  public function index()
+  public function index(Request $request)
   {
 
     Gate::authorize('viewAny', Role::class);
     $permissions = Permission::all();
-    $roles = Role::with('permissions')->orderBy('id', 'desc')->get();
+
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+
+    $roles = Role::with('permissions')->orderBy('id', 'desc')->paginate($perPage);
 
     return Inertia::render(
       'Role/Index',
       [
         'roles' => RoleResource::collection($roles),
         'permissions' => $permissions,
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }
@@ -51,7 +58,6 @@ class RoleController extends Controller
     ]);
 
 
-    // Create a new patient record
     $role = Role::create([
       'name' => $request->name,
       'guard_name' => 'web',

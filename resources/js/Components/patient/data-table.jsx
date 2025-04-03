@@ -26,9 +26,8 @@ import { DataTablePagination } from "../data-table-components/data-table-paginat
 import { DataTableViewOptions } from "../data-table-components/data-table-view-options";
 import { usePage } from "@inertiajs/react";
 
-export function DataTable({ columns, data, onAdd, auth}) {
+export function DataTable({ columns, data, meta, filters, onAdd, auth }) {
   const userPermissions = auth.user?.permissions || [];
-
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [columnFilters, setColumnFilters] = React.useState([]);
@@ -55,24 +54,6 @@ export function DataTable({ columns, data, onAdd, auth}) {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
-
-  const totalPages = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex;
-  const getPageNumbers = () => {
-    let pages = [];
-    for (let i = 0; i < totalPages; i++) {
-      if (
-        i === 0 ||
-        i === totalPages - 1 ||
-        (i >= currentPage - 1 && i <= currentPage + 1)
-      ) {
-        pages.push(i);
-      } else if (pages[pages.length - 1] !== "...") {
-        pages.push("...");
-      }
-    }
-    return pages;
-  };
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between">
@@ -143,7 +124,8 @@ export function DataTable({ columns, data, onAdd, auth}) {
         </Table>
       </div>
 
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table} meta={meta} filters={filters} />
+
     </div>
   );
 }

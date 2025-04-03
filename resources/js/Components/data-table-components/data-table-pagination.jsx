@@ -4,7 +4,7 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
-
+import { router } from "@inertiajs/react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,55 +13,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 
-export function DataTablePagination({ table }) {
+export function DataTablePagination({ table, meta, filters }) {
+  const {per_page} = filters;
+  const currentPage = meta.current_page - 1; // Adjust for zero-based index
+  const totalPages = meta.last_page;
+  // const visiblePages = 3; // Adjust how many pages to show before '...'
 
-  const totalPages = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex;
-  const visiblePages = 3; // Adjust how many pages to show before '...'
+  const generatePagination = (links) => {
+    const totalPages = links.length - 2; // Excluding prev/next
+    const visiblePages = 3; // Number of pages before and after current
 
-  const getPageNumbers = () => {
-    let pages = [];
-    for (let i = 0; i < totalPages; i++) {
-      if (
-        i === 0 ||
-        i === totalPages - 1 ||
-        (i >= currentPage - 1 && i <= currentPage + 1)
+    return links.reduce((acc, link, index) => {
+      if (index === 0 || index === links.length - 1) {
+        // Always include "Previous" & "Next"
+        acc.push(link);
+      } else if (
+        link.active || // Always show the active page
+        link.label == "1" || // Always show first page
+        link.label == totalPages.toString() || // Always show last page
+        Math.abs(Number(link.label) - links.find((l) => l.active)?.label) <=
+          visiblePages // Show nearby pages
       ) {
-        pages.push(i);
-      } else if (pages[pages.length - 1] !== "...") {
-        pages.push("...");
+        acc.push(link);
+      } else if (acc[acc.length - 1]?.label !== "...") {
+        acc.push({ url: null, label: "...", active: false }); // Add "..." only once
       }
-    }
-    return pages;
+      return acc;
+    }, []);
   };
+  const paginationLinks = generatePagination(meta.links);
+  const pageSizeOptions = [5, 10, 20, 30, 40, 50];
+
+  useEffect(() => {
+    // Sync table page size with backend when component mounts
+    table.setPageSize(meta.per_page);
+  }, [meta.per_page]);
+
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex items-center space-x-6 lg:space-x-8 justify-between  w-full">
         <div className="flex items-center space-x-2">
           <p className="text-sm font-medium">Rows per page</p>
           <Select
-            value={`${table.getState().pagination.pageSize}`}
+            value={`${meta.per_page}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value));
+              router.visit(meta.path + `?page=1&per_page=${value}`);
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
+              <SelectValue placeholder={meta.per_page} />
             </SelectTrigger>
             <SelectContent side="top">
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+              {pageSizeOptions.map((pageSize) => (
                 <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="flex items-center space-x-2">
           {/* Page Info */}
@@ -70,64 +81,54 @@ export function DataTablePagination({ table }) {
           </div>
 
           {/* Pagination Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             {/* First Page */}
             <Button
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(0)}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => router.visit(`${meta.path}?page=1&&per_page=${per_page}`)}
+              disabled={currentPage === 0}
             >
               <span className="sr-only">Go to first page</span>
               <DoubleArrowLeftIcon className="h-4 w-4" />
             </Button>
+            {paginationLinks.map((link, index) => {
+              if (link.label === "...") {
+                return (
+                  <span key={index} className="px-2 text-gray-500">
+                    ...
+                  </span>
+                );
+              }
 
-            {/* Previous Page */}
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <span className="sr-only">Go to previous page</span>
-              <ChevronLeftIcon className="h-4 w-4" />
-            </Button>
+              // Decode "&laquo; Previous" and "Next &raquo;"
+              const isPrev = link.label.includes("Previous");
+              const isNext = link.label.includes("Next");
 
-            {/* Page Numbers */}
-            {getPageNumbers().map((page, index) =>
-              page === "..." ? (
-                <span key={index} className="px-2 text-gray-500">
-                  ...
-                </span>
-              ) : (
+              return (
                 <Button
                   key={index}
-                  variant={currentPage === page ? "default" : "outline"}
+                  variant={link.active ? "default" : "outline"}
                   className="h-8 w-8 p-0"
-                  onClick={() => table.setPageIndex(page)}
+                  onClick={() => link.url && router.visit(`${link.url}&&per_page=${per_page}`)}
                 >
-                  {page + 1}
+                  {isPrev ? (
+                    <ChevronLeftIcon className="h-4 w-4" />
+                  ) : isNext ? (
+                    <ChevronRightIcon className="h-4 w-4" />
+                  ) : (
+                    link.label
+                  )}
                 </Button>
-              )
-            )}
-
-            {/* Next Page */}
-            <Button
-              variant="outline"
-              className="h-8 w-8 p-0"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <span className="sr-only">Go to next page</span>
-              <ChevronRightIcon className="h-4 w-4" />
-            </Button>
+              );
+            })}
 
             {/* Last Page */}
             <Button
               variant="outline"
               className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => table.setPageIndex(totalPages - 1)}
-              disabled={!table.getCanNextPage()}
+              onClick={() => router.visit(`${meta.path}?page=${totalPages}&&per_page=${per_page}`)}
+              disabled={currentPage + 1 === totalPages}
             >
               <span className="sr-only">Go to last page</span>
               <DoubleArrowRightIcon className="h-4 w-4" />

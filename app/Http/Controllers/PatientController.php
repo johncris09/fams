@@ -19,17 +19,24 @@ class PatientController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index(User $user)
+  public function index(User $user, Request $request)
   {
 
     Gate::authorize('viewAny', Patient::class);
 
-    $patients = Patient::orderBy('id', 'desc')->get();
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+
+    $patients = Patient::orderBy('id', 'desc')->paginate($perPage);
 
     return Inertia::render(
       'Patient/Index',
       [
         'patients' => PatientResource::collection($patients),
+        'filters' => [
+          'per_page' => $perPage
+        ]
+
       ]
     );
   }

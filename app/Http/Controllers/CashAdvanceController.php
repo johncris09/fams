@@ -15,17 +15,22 @@ class CashAdvanceController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
     Gate::authorize('viewAny', CashAdvance::class);
 
 
-    $cashAdvance = CashAdvance::orderBy('date_added', 'desc')->get();
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+    $cashAdvance = CashAdvance::orderBy('date_added', 'desc')->paginate($perPage);
 
     return Inertia::render(
       'CashAdvance/Index',
       [
         'cashAdvances' => CashAdvanceResource::collection($cashAdvance),
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }

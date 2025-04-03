@@ -16,17 +16,22 @@ class FinancialTypeController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
 
     Gate::authorize('viewAny', FinancialType::class);
 
-    $financialType = FinancialType::orderBy('type', 'asc')->get();
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+    $financialType = FinancialType::orderBy('type', 'asc')->paginate($perPage);
 
     return Inertia::render(
       'FinancialType/Index',
       [
         'financialTypes' => FinancialTypeResource::collection($financialType),
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }

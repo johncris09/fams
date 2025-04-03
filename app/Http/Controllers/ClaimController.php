@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ClaimRequest;
 use App\Http\Resources\BarangayResource;
 use App\Http\Resources\ClaimantResource;
+use App\Http\Resources\ClaimResource;
 use App\Http\Resources\FinancialTypeResource;
 use App\Http\Resources\PatientResource;
 use App\Models\Barangay;
@@ -43,6 +44,8 @@ class ClaimController extends Controller
     // Generate next control number
     $control_number = $lastClaim ? Claim::generateControlNumber() : Claim::generateControlNumber();
 
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
 
     $claims = Claim::with([
       'patient',
@@ -52,7 +55,8 @@ class ClaimController extends Controller
     ])
       ->where('app_year', $year)
       ->orderBy('id', 'desc')
-      ->get();
+      ->paginate($perPage);
+
 
     $barangays = Barangay::orderBy('barangay', 'asc')->get();
     $claimants = Claimant::orderBy('last_name', 'asc')->get();
@@ -74,7 +78,7 @@ class ClaimController extends Controller
     return Inertia::render(
       'Claim/Index',
       [
-        'claims' => $claims,
+        'claims' => ClaimResource::collection($claims),
         'appYear' => $year,
         'appMonth' => date('m'),
         'controlNumber' => $control_number,
@@ -83,7 +87,9 @@ class ClaimController extends Controller
         'patients' => PatientResource::collection($patients),
         'financialTypes' => FinancialTypeResource::collection($financialType),
         'claimantsByGender' => $formattedCounts,
-
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }

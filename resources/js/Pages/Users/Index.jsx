@@ -20,7 +20,7 @@ import FormModal from "@/Components/user/FormModal";
 const TITLE = "User";
 
 export default function Index({ auth }) {
-  const { users } = usePage().props;
+  const { users, filters} = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(null);
@@ -62,6 +62,8 @@ export default function Index({ auth }) {
             auth={auth}
             columns={columns}
             data={users.data}
+            filters={filters}
+            meta={users.meta}
             onEdit={handleOpenModal}
             onAdd={handleOpenModal}
           />

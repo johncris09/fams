@@ -25,7 +25,7 @@ import {
 import { DataTablePagination } from "../data-table-components/data-table-pagination";
 import { DataTableViewOptions } from "../data-table-components/data-table-view-options";
 
-export function DataTable({ columns, data, onAdd  }) {
+export function DataTable({ columns,data, meta, filters, onAdd  }) {
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -54,23 +54,6 @@ export function DataTable({ columns, data, onAdd  }) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  const totalPages = table.getPageCount();
-  const currentPage = table.getState().pagination.pageIndex;
-  const getPageNumbers = () => {
-    let pages = [];
-    for (let i = 0; i < totalPages; i++) {
-      if (
-        i === 0 ||
-        i === totalPages - 1 ||
-        (i >= currentPage - 1 && i <= currentPage + 1)
-      ) {
-        pages.push(i);
-      } else if (pages[pages.length - 1] !== "...") {
-        pages.push("...");
-      }
-    }
-    return pages;
-  };
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between">
@@ -144,7 +127,8 @@ export function DataTable({ columns, data, onAdd  }) {
         </Table>
       </div>
 
-      <DataTablePagination table={table} />
+
+      <DataTablePagination table={table} meta={meta} filters={filters} />
     </div>
   );
 }

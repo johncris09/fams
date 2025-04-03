@@ -50,9 +50,10 @@ class UserController extends Controller
 
     Gate::authorize('viewAny', User::class);
 
-    $users = User::with('roles')->orderBy('name', 'asc')->get();
 
-    // return response($users);
+    $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+    $users = User::with('roles')->orderBy('name', 'asc')->paginate($perPage);
 
     $roles = Role::all(); //->pluck(value: 'name');
     return Inertia::render(
@@ -60,6 +61,9 @@ class UserController extends Controller
       [
         'users' => UserResource::collection($users),
         'roles' => $roles,
+        'filters' => [
+          'per_page' => $perPage
+        ]
       ]
     );
   }

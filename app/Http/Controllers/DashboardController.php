@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CashAdvance;
 use App\Models\Claim;
 use App\Models\Claimant;
 use App\Models\FinancialType;
@@ -28,10 +29,17 @@ class DashboardController extends Controller
       ];
     });
 
+    $totalCashAdvance = CashAdvance::sum('amount');
+    $totalAmountClaims = Claim::sum('amount');
+    $remainingCashAdvance =  $totalCashAdvance - $totalAmountClaims;
+
     return Inertia::render(
       'Dashboard/Index',
       [
-        'totalUsers' => User::count(), // where year = now
+        'totalCashAdvance' => $totalCashAdvance,
+        'totalAmountClaims' => $totalAmountClaims,
+        'remainingCashAdvance' => $remainingCashAdvance,
+        'totalUsers' => User::count(),
         'totalPatients' => Patient::count(),
         'totalClaimants' => Claimant::count(),
         'totalClaims' => Claim::count(),

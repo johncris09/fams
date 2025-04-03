@@ -9,7 +9,12 @@ import {
 } from "@/components/ui/table";
 import { Head } from "@inertiajs/react";
 import { Link, usePage } from "@inertiajs/react";
-import { ArrowUpDown, FilesIcon } from "lucide-react";
+import {
+  ArrowUpDown,
+  DollarSign,
+  FilesIcon,
+  PersonStandingIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -21,10 +26,22 @@ import {
 } from "@/components/ui/card";
 import { Users, ArrowUpRight, UserCheck2 } from "lucide-react";
 import StatCard from "./StatCard";
-import { SickOutlined } from "@mui/icons-material";
+import {
+  Balance,
+  BalanceOutlined,
+  BalanceTwoTone,
+  Money,
+  MoneyOff,
+  MoneySharp,
+  MoneyTwoTone,
+  SickOutlined,
+} from "@mui/icons-material";
 import { useMemo, useState } from "react";
 export default function Dashboard() {
   const {
+    totalCashAdvance,
+    totalAmountClaims,
+    remainingCashAdvance,
     user,
     totalClaimants,
     totalPatients,
@@ -75,18 +92,27 @@ export default function Dashboard() {
       <Head title="Dashboard" />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Users"
-          description="All registered users"
-          value={totalUsers}
-          icon={<Users className="h-5 w-5 text-white" />}
+          title="Balance"
+          description="Remaining Balance"
+          value={remainingCashAdvance}
+          icon={<BalanceOutlined className="h-5 w-5 text-primary" />}
           gradientFrom="blue"
           gradientTo="blue"
         />
         <StatCard
+          title="Cash Advance"
+          description="Total Cash Advance"
+          value={totalCashAdvance}
+          icon={<Money className="h-5 w-5 text-primary" />}
+          gradientFrom="blue"
+          gradientTo="blue"
+        />
+
+        <StatCard
           title="Total Patients"
           description="All registered Patients"
           value={totalPatients}
-          icon={<SickOutlined className="h-5 w-5 text-white" />}
+          icon={<SickOutlined className="h-5 w-5 text-primary" />}
           gradientFrom="red"
           gradientTo="red"
         />
@@ -94,7 +120,7 @@ export default function Dashboard() {
           title="Total Claimants"
           description="All registered Claimants"
           value={totalClaimants}
-          icon={<UserCheck2 className="h-5 w-5 text-white" />}
+          icon={<UserCheck2 className="h-5 w-5 text-primary" />}
           gradientFrom="yellow"
           gradientTo="yellow"
         />
@@ -102,9 +128,18 @@ export default function Dashboard() {
           title="Total Claims"
           description="All Claims"
           value={totalClaims}
-          icon={<FilesIcon className="h-5 w-5 text-white" />}
+          icon={<FilesIcon className="h-5 w-5 text-primary" />}
           gradientFrom="pink"
           gradientTo="pink"
+        />
+
+        <StatCard
+          title="Total Users"
+          description="All registered users"
+          value={totalUsers}
+          icon={<Users className="h-5 w-5 text-primary" />}
+          gradientFrom="blue"
+          gradientTo="blue"
         />
       </div>
       <Card className="w-full   shadow-md  ">

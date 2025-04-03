@@ -14,8 +14,7 @@ import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import InputError from "@/Components/InputError";
 
-
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({ toast, title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
   const { data, setData, post, processing, reset, patch } = useForm({
     type: "",
@@ -41,7 +40,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       patch(route("financial_types.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
         onError: (errors) => console.error(errors),
@@ -49,7 +50,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("financial_types.store"), {
         onSuccess: () => {
-          toast.success(`${title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
         },
       });
@@ -78,9 +81,8 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Type"
                   onChange={(e) => setData("type", e.target.value)}
                 />
- <InputError message={errors.type} className="mt-2" />
-
-                    </div>
+                <InputError message={errors.type} className="mt-2" />
+              </div>
               <div>
                 <Label htmlFor="amount">Amount</Label>
                 <Input
@@ -92,8 +94,8 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   onChange={(e) => setData("amount", e.target.value)}
                 />
 
-<InputError message={errors.amount} className="mt-2" />
-                  </div>
+                <InputError message={errors.amount} className="mt-2" />
+              </div>
               <div>
                 <Label htmlFor="description">Description</Label>
 

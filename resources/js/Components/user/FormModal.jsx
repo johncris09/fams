@@ -59,7 +59,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("users.store"), {
         onSuccess: () => {
-          toast.success(`{title} created successfully!`);
+          toast.success(`${title} created successfully!`);
           onClose();
         },
       });

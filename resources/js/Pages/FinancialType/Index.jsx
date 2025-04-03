@@ -16,9 +16,11 @@ import { DataTable } from "@/Components/financial_type/data-table";
 import { getColumns } from "@/Components/financial_type/columns";
 import FormModal from "@/Components/financial_type/FormModal";
 import { Button } from "@/Components/ui/button";
-import { toast } from "react-toastify";
+import { useToast } from "@/hooks/use-toast";
+
 const TITLE = "Financial Type";
 export default function Index({ auth }) {
+  const { toast } = useToast();
   const { financialTypes } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
@@ -38,7 +40,9 @@ export default function Index({ auth }) {
     router.delete(route("financial_types.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success(`${TITLE} deleted successfully`);
+        toast({
+          description: `${TITLE} deleted successfully`,
+        });
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
@@ -67,6 +71,7 @@ export default function Index({ auth }) {
         </CardContent>
       </Card>
       <FormModal
+        toast={toast}
         isOpen={isModalOpen}
         onClose={() => {
           router.reload({ only: [] });
@@ -81,8 +86,8 @@ export default function Index({ auth }) {
           <DialogHeader>
             <DialogTitle>Delete Selected {`${TITLE}`}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the {`${TITLE}`}? This action cannot be
-              undone.
+              Are you sure you want to delete the {`${TITLE}`}? This action
+              cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

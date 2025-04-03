@@ -21,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2Icon, UserIcon } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({ toast, title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
 
   const { data, setData, post, processing, reset, patch } = useForm({
@@ -56,14 +56,18 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       patch(route("claimants.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
       });
     } else {
       post(route("claimants.store"), {
         onSuccess: () => {
-          toast.success(`${title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
         },
       });

@@ -11,10 +11,9 @@ import { useEffect } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon } from "lucide-react";
-import { toast } from "sonner";
 import InputError from "@/Components/InputError";
 
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({ toast, title, isOpen, onClose, selectedData }) => {
   const { errors } = usePage().props;
 
   const { data, setData, post, processing, reset, patch } = useForm({
@@ -43,7 +42,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       patch(route("patients.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
         onError: (errors) => console.error(errors),
@@ -51,7 +52,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("patients.store"), {
         onSuccess: () => {
-          toast.success(`{title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
         },
       });
@@ -79,9 +82,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                   placeholder="Last Name"
                   onChange={(e) => setData("last_name", e.target.value)}
                 />
-                  <InputError message={errors.last_name} className="mt-2" />
-
-
+                <InputError message={errors.last_name} className="mt-2" />
               </div>
               <div>
                 <Label htmlFor="first-name">First Name</Label>
@@ -93,8 +94,6 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                 />
 
                 <InputError message={errors.first_name} className="mt-2" />
-
-
               </div>
               <div>
                 <Label htmlFor="middle-name">Middle Name (Optional)</Label>
@@ -127,11 +126,13 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                 {processing ? (
                   selectedData ? (
                     <>
-                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" /> Updating...
+                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" />{" "}
+                      Updating...
                     </>
                   ) : (
                     <>
-                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" /> Saving...
+                      <Loader2Icon className="mr-2 w-4 h-4 animate-spin" />{" "}
+                      Saving...
                     </>
                   )
                 ) : selectedData ? (

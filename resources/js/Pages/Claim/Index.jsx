@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import reportTemplate from "./../../template/FinancialAssistanceVoucherTemplate.xlsx";
-import { useToast } from "@/hooks/use-toast";
 import XlsxPopulate, { RichText } from "xlsx-populate/browser/xlsx-populate";
 import {
   Dialog,
@@ -20,6 +19,7 @@ import FormModal from "@/Components/claim/FormModal";
 import StatCard from "../Dashboard/StatCard";
 import { Female, FemaleRounded, Male, MaleRounded } from "@mui/icons-material";
 import PrintModal from "@/Components/claim/PrintModal";
+import { useToast } from "@/hooks/use-toast";
 const TITLE = "Claim";
 
 export default function Index({ auth }) {
@@ -170,6 +170,9 @@ export default function Index({ auth }) {
     router.delete(route("claims.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
+        toast({
+          description: `${TITLE} deleted successfully`,
+        });
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
@@ -189,7 +192,7 @@ export default function Index({ auth }) {
           title="Female"
           description="Total Female"
           value={claimantsByGender.female}
-          icon={<FemaleRounded className="h-5 w-5 text-white" />}
+          icon={<FemaleRounded className="h-5 w-5 text-primary" />}
           gradientFrom="blue"
           gradientTo="blue"
         />
@@ -197,7 +200,7 @@ export default function Index({ auth }) {
           title="Male"
           description="Total Male"
           value={claimantsByGender.male}
-          icon={<Male className="h-5 w-5 text-white" />}
+          icon={<Male className="h-5 w-5 text-primary" />}
           gradientFrom="red"
           gradientTo="red"
         />
@@ -216,6 +219,7 @@ export default function Index({ auth }) {
         </CardContent>
       </Card>
       <FormModal
+        toast={toast}
         isOpen={isModalOpen}
         onClose={() => {
           router.reload({ only: [] });

@@ -15,10 +15,11 @@ import { Card, CardContent } from "@mui/material";
 import { DataTable } from "@/Components/claimant/data-table";
 import { getColumns } from "@/Components/claimant/columns";
 import { Button } from "@/Components/ui/button";
-import { toast } from "react-toastify";
+import { useToast } from "@/hooks/use-toast";
 import FormModal from "@/Components/claimant/FormModal";
 const TITLE = "Claimant";
 export default function Index({ auth }) {
+  const { toast } = useToast();
   const { claimants } = usePage().props;
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
@@ -38,7 +39,9 @@ export default function Index({ auth }) {
     router.delete(route("claimants.destroy", selectedData.id), {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success(`${TITLE} deleted successfully`);
+        toast({
+          description: `${TITLE} deleted successfully`,
+        });
         setShowDeleteDialog(false);
         setSelectedData(null);
       },
@@ -67,6 +70,7 @@ export default function Index({ auth }) {
         </CardContent>
       </Card>
       <FormModal
+        toast={toast}
         isOpen={isModalOpen}
         onClose={() => {
           router.reload({ only: [] });

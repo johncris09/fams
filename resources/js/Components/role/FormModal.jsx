@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -47,7 +48,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("roles.store"), {
         onSuccess: () => {
-          toast.success(`{title} created successfully!`);
+          toast.success(`${title} created successfully!`);
           onClose();
         },
       });

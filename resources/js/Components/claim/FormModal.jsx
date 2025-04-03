@@ -27,11 +27,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { useForm, usePage } from "@inertiajs/react";
-import { toast } from "sonner";
 import { Loader2Icon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({ toast, title, isOpen, onClose, selectedData }) => {
   const [openPatient, setOpenPatient] = useState(false);
   const [openClaimant, setOpenClaimant] = useState(false);
   const [openBarangay, setOpenBarangay] = useState(false);
@@ -52,8 +51,6 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     app_year: appYear,
     app_month: appMonth,
     claim_date: "",
-    app_year: "",
-    app_month: "",
     purpose: "",
     purok: "",
     amount: "",
@@ -87,7 +84,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       patch(route("claims.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
         onError: (errors) => console.error(errors),
@@ -96,9 +95,13 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
       // console.info(data)
       post(route("claims.store"), {
         onSuccess: () => {
-          toast.success(`{title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
+          reset();
         },
+        onError: (errors) => console.error(errors),
       });
     }
   };
@@ -489,6 +492,10 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                                 <CommandItem
                                   key={financial_type.id}
                                   onSelect={() => {
+                                    setData(
+                                      "amount",
+                                      financial_type.amount
+                                    );
                                     setData(
                                       "financial_type_id",
                                       financial_type.id

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\UserRequest;
 use Inertia\Inertia;
@@ -78,23 +80,18 @@ class UserController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(UserRequest $request)
+  public function store(UserStoreRequest $request)
   {
     $user = User::create($request->validated());
 
     if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-
       $avatar = $request->file('avatar');
-      $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
-      // $avatar->storeAs('public/avatars', $avatarName);
+      $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
       $avatar->storeAs('avatars', $avatarName, 'public');
       $user->update(['avatar' => $avatarName]);
     }
     // assign role
     $user->assignRole($request->role);
-
-    // send verification email
-    // $user->sendEmailVerificationNotification();
 
     return redirect()->route('users.index')
       ->with('success', 'User created successfully!');
@@ -130,25 +127,34 @@ class UserController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(UserRequest $request, User $user): RedirectResponse
+  public function update(UserUpdateRequest $request, User $user)
   {
-    // Validate the request (this will automatically be done via UserRequest)
-    $validatedData = $request->validated();
 
-    // Only update if there's any change in the name, email, or role
-    $user->update($request->only('name', 'email', 'role', 'avatar'));
+    $user->update(
+      $request->validated()
+    );
+
 
     // Check if the avatar was uploaded
     if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+      $user->update([
+        'avatar' => $request->file('avatar')->store('users'),
+      ]);
+      // $avatar = $request->file('avatar');
+      // $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
+      // // Store the avatar in the public storage
+      // $avatar->storeAs('avatars', $avatarName, 'public');
 
-      $avatar = $request->file('avatar');
-      $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
-      // Store the avatar in the public storage
-      $avatar->storeAs('avatars', $avatarName, 'public');
-
-      // Update the user with the new avatar path
-      $user->update(['avatar' => $avatarName]);
+      // // Update the user with the new avatar path
+      // $user->update(['avatar' => $avatarName]);
     }
+
+    // Validate the request (this will automatically be done via UserRequest)
+    // $request->all();
+
+    // Only update if there's any change in the name, email, or role
+    // $user->update($request->only('name', 'email', 'role'));
+
 
     // Sync the user's roles
     $user->syncRoles($request->role);

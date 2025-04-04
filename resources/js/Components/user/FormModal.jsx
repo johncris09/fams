@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 
-const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
+const FormModal = ({ toast, title, isOpen, onClose, selectedData }) => {
   const { errors, roles } = usePage().props;
 
   const { data, setData, post, processing, reset, patch, put } = useForm({
@@ -30,7 +30,7 @@ const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
     password: "",
     password_confirmation: "",
     role: "",
-    avatar: {},
+    avatar: "",
   });
   useEffect(() => {
     if (selectedData) {
@@ -38,18 +38,25 @@ const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
         name: selectedData.name || "",
         email: selectedData.email || "",
         password: selectedData.password || "",
-        avatar: selectedData.avatar || "",
+        avatar: "",
         role: Array.isArray(selectedData.roles) ? selectedData.roles[0] : "",
       });
     } else {
       reset();
     }
   }, [selectedData, isOpen]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (selectedData) {
       put(route("users.update", selectedData.id), {
         preserveScroll: true,
+        /*************  ✨ Codeium Command ⭐  *************/
+        /**
+         * Called when the PUT request is successful.
+         * Shows a toast notification and closes the modal.
+/******  91340cba-c2b7-4028-8952-5c1411ee034a  *******/
         onSuccess: () => {
           toast({
             description: `${title} updated successfully`,
@@ -80,7 +87,7 @@ const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit} enctype="multipart/form-data">
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Name</Label>
@@ -106,23 +113,24 @@ const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
 
                 <InputError message={errors.email} className="mt-2" />
               </div>
-              <div>
-                <Label className="text-primary" htmlFor="file">
-                  Upload profile picture
-                </Label>
-                <Input
-                  className="mt-1"
-                  id="avatar"
-                  name="avatar"
-                  type="file"
-                  onChange={(e) => {
-                    let files = e.target.files?.[0];
-                    setData("avatar", files);
-                  }}
-                />
 
-                <InputError message={errors.avatar} className="mt-2" />
-              </div>
+              {!selectedData && (
+                <div>
+                  <Label className="text-primary" htmlFor="file">
+                    Upload profile photo
+                  </Label>
+                  <Input
+                    className="mt-1"
+                    id="avatar"
+                    name="avatar"
+                    type="file"
+                    onChange={(e) => setData("avatar", e.target.files[0])}
+                  />
+
+                  <InputError message={errors.avatar} className="mt-2" />
+                </div>
+              )}
+
               {!selectedData && (
                 <>
                   <div className="mt-4">

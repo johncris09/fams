@@ -22,12 +22,12 @@ class UserRequest extends FormRequest
    */
   public function rules(): array
   {
+
     $userId = $this->route('user') ?? $this->id; // assuming you get the user ID from the route or the form data
 
     return [
       'name' => 'required|string|max:255',
       'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
-
       'password' => $this->isMethod('post')
         ? ['required', 'confirmed', 'min:8']
         : ['nullable', 'confirmed', 'min:8'],
@@ -37,17 +37,17 @@ class UserRequest extends FormRequest
 
   }
 
-  public function messages(): array
-  {
-    return [
-      'name.required' => 'The name field is required.',
-      'email.required' => 'The email field is required.',
-      'email.unique' => 'This email is already in use.',
-      'password.required' => 'The password field is required.',
-      'password.confirmed' => 'Passwords do not match.',
-      'role.required' => 'Please select a role.',
-      'avatar.image' => 'The avatar must be an image file.',
-      'avatar.max' => 'The avatar file size must not exceed 2MB.',
-    ];
-  }
+  // public function messages(): array
+  // {
+  //   return [
+  //     'name.required' => 'The name field is required.',
+  //     'email.required' => 'The email field is required.',
+  //     'email.unique' => 'This email is already in use.',
+  //     'password.required' => 'The password field is required.',
+  //     'password.confirmed' => 'Passwords do not match.',
+  //     'role.required' => 'Please select a role.',
+  //     'avatar.image' => 'The avatar must be an image file.',
+  //     'avatar.max' => 'The avatar file size must not exceed 2MB.',
+  //   ];
+  // }
 }

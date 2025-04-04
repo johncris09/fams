@@ -22,10 +22,15 @@ class UserRequest extends FormRequest
    */
   public function rules(): array
   {
+    $userId = $this->route('user') ?? $this->id; // assuming you get the user ID from the route or the form data
+
     return [
-      'name' => ['required', 'string', 'max:255'],
-      'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-      'password' => ['required', 'confirmed', 'min:8'],
+      'name' => 'required|string|max:255',
+      'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
+
+      'password' => $this->isMethod('post')
+        ? ['required', 'confirmed', 'min:8']
+        : ['nullable', 'confirmed', 'min:8'],
       'role' => ['required'], // Adjust roles accordingly
       'avatar' => ['nullable', 'image', 'max:2048'], // 2MB max file size
     ];

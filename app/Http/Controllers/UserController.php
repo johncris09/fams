@@ -80,34 +80,25 @@ class UserController extends Controller
    */
   public function store(UserRequest $request)
   {
-    // create user
-    $user = User::create([
-      'name' => $request->name,
-      'email' => $request->email,
-      'password' => Hash::make($request->password),
-    ]);
+    $user = User::create($request->validated());
 
-    // store avatar
-    $avatar = $request->file('avatar');
-    $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
-    $avatar->storeAs('public/avatars', $avatarName);
-    $user->update(['avatar' => $avatarName]);
+    if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
 
+      $avatar = $request->file('avatar');
+      $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
+      // $avatar->storeAs('public/avatars', $avatarName);
+      $avatar->storeAs('avatars', $avatarName, 'public');
+      $user->update(['avatar' => $avatarName]);
+    }
     // assign role
     $user->assignRole($request->role);
 
+    // send verification email
+    // $user->sendEmailVerificationNotification();
 
     return redirect()->route('users.index')
       ->with('success', 'User created successfully!');
 
-
-    // send verification email
-    // $user->sendEmailVerificationNotification();
-    // return Inertia::render('Users/Index', [
-    //   'users' => UserResource::collection(User::paginate(10)),
-    //   'roles' => Role::all()->pluck('name'),
-    //   'message' => 'User ' . $user->name . ' created successfully'
-    // ]);
   }
 
   /**
@@ -139,50 +130,35 @@ class UserController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request): RedirectResponse
+  public function update(UserRequest $request, User $user): RedirectResponse
   {
-    Gate::authorize('update', User::class);
+    // Validate the request (this will automatically be done via UserRequest)
+    $validatedData = $request->validated();
 
-    // get id from request
-    $id = $request->id;
-    // get user by id
-    $user = User::find($id);
+    // Only update if there's any change in the name, email, or role
+    $user->update($request->only('name', 'email', 'role', 'avatar'));
 
+    // Check if the avatar was uploaded
+    if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
 
-    $request->validate([
-      'name' => 'required|string|max:255',
-      'email' => 'required',
-      'email',
-      'max:255',
-      'unique:users,email',
-      'role' => 'required',
-    ]);
+      $avatar = $request->file('avatar');
+      $avatarName = $user->id . '.' . $avatar->getClientOriginalExtension();
+      // Store the avatar in the public storage
+      $avatar->storeAs('avatars', $avatarName, 'public');
 
+      // Update the user with the new avatar path
+      $user->update(['avatar' => $avatarName]);
+    }
 
-    $user->update($request->except(['password', 'avatar']));
-
-
-    // assign role
+    // Sync the user's roles
     $user->syncRoles($request->role);
 
-
+    // Return a success response with a redirect
     return redirect()->route('users.index')
       ->with('success', 'User updated successfully!');
-
-
-    // // update user
-    // // if email isnt the same as the current email skip the email verification
-    // if ($request->email !== $user->email) {
-    //   $user->update($request->validated());
-    // } else {
-    //   $user->update($request->except(['password', 'avatar']));
-    // }
-
-    // return back()->with([
-    //   'status' => 'user-updated',
-    //   'user' => $user->fresh(),
-    // ]);
   }
+
+
 
   /**
    * Remove the specified resource from storage.

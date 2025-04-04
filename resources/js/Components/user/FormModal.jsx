@@ -21,10 +21,10 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 
-const FormModal = ({ title, isOpen, onClose, selectedData }) => {
+const FormModal = ({toast, title, isOpen, onClose, selectedData }) => {
   const { errors, roles } = usePage().props;
 
-  const { data, setData, post, processing, reset, patch } = useForm({
+  const { data, setData, post, processing, reset, patch, put } = useForm({
     name: "",
     email: "",
     password: "",
@@ -48,10 +48,12 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedData) {
-      patch(route("users.update", selectedData.id), {
+      put(route("users.update", selectedData.id), {
         preserveScroll: true,
         onSuccess: () => {
-          toast.success(`${title} updated successfully!`);
+          toast({
+            description: `${title} updated successfully`,
+          });
           onClose();
         },
         onError: (errors) => console.error(errors),
@@ -59,7 +61,9 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
     } else {
       post(route("users.store"), {
         onSuccess: () => {
-          toast.success(`${title} created successfully!`);
+          toast({
+            description: `${title} created successfully`,
+          });
           onClose();
         },
       });
@@ -76,7 +80,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
             </DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} enctype="multipart/form-data">
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Name</Label>
@@ -109,6 +113,7 @@ const FormModal = ({ title, isOpen, onClose, selectedData }) => {
                 <Input
                   className="mt-1"
                   id="avatar"
+                  name="avatar"
                   type="file"
                   onChange={(e) => {
                     let files = e.target.files?.[0];
